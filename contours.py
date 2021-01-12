@@ -29,7 +29,7 @@ def arrange_points(points):
 
 def get_sudoku(name='./sudoku.jpeg', img_size=500):
   imgi=cv2.imread(name)
-
+  # print(imgi)
   #processing
   img=cv2.cvtColor(imgi, cv2.COLOR_BGR2GRAY)
   img=cv2.GaussianBlur(img, (3,3), 3)
@@ -41,19 +41,19 @@ def get_sudoku(name='./sudoku.jpeg', img_size=500):
   # cv2.drawContours(img, cnt, -1, (255, 255, 255), 5)
   img2=np.zeros_like(img)
   sizes, cnt=sort_contours_size(cnt)
-  # print(np.array(cnt[0]).shape)
+
   cv2.drawContours(img2, cnt, 0, (255, 255, 255), 5)
   points=(cv2.goodFeaturesToTrack(img2, 4, 0.5, 50))
   points1=np.float32([[point[0][0], point[0][1]] for point in points])
+
   points1=arrange_points(points1)
-  # img_size=500
+
   points2=np.float32([[0, 0], [img_size, 0], [0, img_size], [img_size, img_size]])
 
   mat=cv2.getPerspectiveTransform(points1, points2)
   final=cv2.warpPerspective(imgi, mat, (img_size, img_size))
 
-  # print(len(cnt))
-  # print(h)
+
   for point in points1:
     cv2.circle(img2, (point[0], point[1]), 5, (0, 0, 255), cv2.FILLED)
   # img=cv2.dilate(img, np.ones((2,2), np.uint8), iterations=1)

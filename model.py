@@ -7,7 +7,7 @@ from sklearn.model_selection import train_test_split
 import tensorflow as tf
 
 def get_data():
-  imgs=[[(f'./EnglishFnt/English/Fnt/Sample0{format(i, "02d")}/'+j) for j in os.listdir(f'./EnglishFnt/English/Fnt/Sample0{format(i, "02d")}/')] for i in range(2, 11)]
+  imgs=[[(f'./data/English/Fnt/Sample0{format(i, "02d")}/'+j) for j in os.listdir(f'./data/English/Fnt/Sample0{format(i, "02d")}/')] for i in range(2, 11)]
   x=[]
   y=[]
   z=np.zeros((10))
@@ -94,11 +94,11 @@ def train_model(data_func):
       samplewise_center=True,
       samplewise_std_normalization=True,
       rotation_range=5,
-      width_shift_range=0.1,
-      height_shift_range=0.03,
+      width_shift_range=0.2,
+      height_shift_range=0.05,
   #     brightness_range=None,
   #     shear_range=0.1,
-      zoom_range=[0.8, 1.1],
+      zoom_range=[0.9, 1.1],
   #     channel_shift_range=0.0,
       fill_mode='nearest',
   #     cval=0.0,
@@ -116,7 +116,7 @@ def train_model(data_func):
   model.compile(optimizer=tf.keras.optimizers.Adam(lr=0.01, decay=0.1), loss=tf.keras.losses.categorical_crossentropy, metrics=['accuracy'])
   history=model.fit(gen.flow(x_train, y_train, batch_size=32), steps_per_epoch=len(x_train) / 32, validation_data=(x_test, y_test), epochs=15)
 
-  model.save('./Model/model.h5')
+  model.save('./Model/model')
 
 if __name__=='__main__':
   train_model(get_data)
