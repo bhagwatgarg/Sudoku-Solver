@@ -1,0 +1,14 @@
+matplotlib
+numpy
+opencv_python
+pandas
+scikit_learn
+tensorflow
+
+#The below versions are tested to be working fine:
+# matplotlib == 3.1.2
+# numpy == 1.17.4
+# opencv_python == 4.5.1.48
+# pandas == 1.2.0
+# scikit_learn == 0.24.0
+# tensorflow_cpu == 2.4.0
