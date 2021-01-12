@@ -6,7 +6,7 @@
 </p>
 <h1 align="center">
   <br>
-  <img src='https://www.flaticon.com/svg/vstatic/svg/1028/1028343.svg?token=exp=1610481760~hmac=9b9490b6a460ea2c8747b27c5d4da1cd' width='160'>
+  <img src='icon.png' width='160'>
   
 </h1>
 
