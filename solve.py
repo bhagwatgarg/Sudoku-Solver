@@ -1,14 +1,25 @@
 import numpy as np
-import time
 
 class Solver():
   def __init__(self, ar):
-    self.a=ar
-    self.b=ar
-    self.check_if_solvable()
+    """
+      Initialize the solver with the unsolved sudoku array
+      Arguments:
+        ar: 9*9 array with missing values substituted as 0
+    """
+    self.a=ar                 #copy of ar
+    self.b=ar                 #copy of ar
+    self.check_if_solvable()  #checks if sudoku is solvable or not
 
   def check_if_solvable(self):
-    self.solvable=True
+    """
+      Checks if sudoku is solvable or not
+      Returns:
+        True : Sudoku is solvable
+        False: Sudoku is not solvable
+    """
+
+    self.solvable=True      #status of sudoku
     for i in range(0, 9):
       for j in range(0, 9):
         if self.a[i][j]==0:
@@ -18,18 +29,24 @@ class Solver():
           return False
 
   def solve(self):
+    """
+      A functions which is called to solve the sudoku
+      Returns:
+        Solved Sudoku: If sudoku is solvable
+        False        : Otherwise
+    """
     if not self.solvable:
       print('Suduko not Solvable')
       return False
-    res=False
-    if self.a[0][0]!=0:
-      res=self.back(0, 1)
-    else:
-      for i in range(1, 10):
-        self.a[0][0]=i
-        res=self.back(0, 1)
-        if res:
-          break
+    res=self.back(0, 0)
+    # if self.a[0][0]!=0:
+    #   res=self.back(0, 1)
+    # else:
+    #   for i in range(1, 10):
+    #     self.a[0][0]=i
+    #     res=self.back(0, 1)
+    #     if res:
+    #       break
     if res:
       self.check_if_solvable()
       print("Sudoku Solved!")
@@ -39,6 +56,15 @@ class Solver():
     return False
 
   def back(self, i, j):
+    """
+      A recursive back-tracking algorithm for solving sudoku
+      Arguments:
+        i: row index
+        j: column index
+      Returns:
+        True : if a solution exists
+        False: if no solution exists
+    """
     if i>8 or j>8: return True
     nexti, nextj=i+int(j==8), (j+1)%9
     if self.a[i][j]!=0: return self.back(nexti, nextj)
@@ -54,6 +80,15 @@ class Solver():
     return False
 
   def check(self, i, j):
+    """
+      Finds which values are valid for a given cell in the sudoku matrix
+      Arguments:
+        i: row index
+        j: column index
+      Returns:
+        A numpy array of size 10 with the value at each index signifying whether it is possible to place that number in that location
+        (1 if possible; 0 otherwise)
+    """
     possible=np.ones((10), np.int)
     for k in range(0, 9):
       if k==j: continue
@@ -80,7 +115,7 @@ if __name__=='__main__':
   # print(str(time.time()-t))
 
 #S1
-''' 
+'''
 0 0 4 3 0 0 2 0 9
 0 0 5 0 0 9 0 0 1
 0 7 0 0 6 0 0 4 3

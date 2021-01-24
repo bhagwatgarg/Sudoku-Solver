@@ -5,14 +5,26 @@ from convertImage import persist_image
 #https://stackoverflow.com/questions/61643039/improving-canny-edge-detection
 
 def sort_contours_size(cnts):
-  """ Sort contours based on the size"""
-
+  """
+    Sort contours based on the size
+    Arguments:
+      cnts: Array of contours
+    Returns:
+      A tuple of array of contour size and array of contours (sorted in descending order of their area)
+  """
   cnts_sizes = [cv2.contourArea(contour) for contour in cnts]
   arr=reversed(sorted(zip(cnts_sizes, cnts), key=lambda x: x[0]))
   cnts=[a[1] for a in arr]
   return cnts_sizes, cnts
 
 def arrange_points(points):
+  """
+    Arrange points in clockwise order with the top-left point indexed at 0
+    Arguments:
+      points: array of 4 points representing corners of a distorted rectangle
+    Returns:
+      The same points arranged in clockwise order
+  """
   [midx, midy]=np.sum(points, axis=0)/4
   points_arr=np.zeros_like(points)
   for point in points:
@@ -27,9 +39,17 @@ def arrange_points(points):
       points_arr[3]=np.array(point)
   return points_arr
 
-def get_sudoku(name='./sudoku.jpeg', img_size=500):
+def get_sudoku(name='./learn/sudoku2.jpeg', img_size=500):
+  """
+    Carry out processing of the sudoku image and crop it to extract the puzzle
+    Arguments:
+      name (optional)    : path to the image to be processed
+      img_size (optional): final size of the image required
+    Returns:
+      Processed image representing the sudoku
+  """
   imgi=cv2.imread(name)
-  # print(imgi)
+
   #processing
   img=cv2.cvtColor(imgi, cv2.COLOR_BGR2GRAY)
   img=cv2.GaussianBlur(img, (3,3), 3)
@@ -53,10 +73,11 @@ def get_sudoku(name='./sudoku.jpeg', img_size=500):
   mat=cv2.getPerspectiveTransform(points1, points2)
   final=cv2.warpPerspective(imgi, mat, (img_size, img_size))
 
+  # mark the points
+  # for point in points1:
+  #   cv2.circle(img2, (point[0], point[1]), 5, (0, 0, 255), cv2.FILLED)
 
-  for point in points1:
-    cv2.circle(img2, (point[0], point[1]), 5, (0, 0, 255), cv2.FILLED)
-  # img=cv2.dilate(img, np.ones((2,2), np.uint8), iterations=1)
+  #Display the final image
   if __name__=='__main__':
     cv2.imshow('out', final)
     persist_image()

@@ -9,6 +9,15 @@ from model import get_data, train_model
 from solve import Solver
 
 def split_image(img, img_size, crop):
+  """
+    Splits the sudoku image into 9*9 parts with each part itself an image of a part of the input image
+    Arguments:
+      img: sudoku image
+      img_size: the size of the image
+      crop: number of pixels to be cropped off from each side of the sub-images
+    Returns:
+      An array with 9*9 sub-images of the input image
+  """
   i, j, add = 0, 0, img_size//9
   new=np.zeros((9, 9, add-2*crop, add-2*crop))
 
@@ -19,24 +28,21 @@ def split_image(img, img_size, crop):
       #   x=(np.random.random((64, 64))>0.95)
       mean=x.mean().astype(np.float32)
       std=x.std().astype(np.float)
-      
+
       x = (x - mean)/std
 
       new[j][i]=x
   # new=(new+(np.random.random(new.shape)>0.95))%2
   return new
 
-  # img2=img[add*i:add*(i+1), add*i:add*(i+1)]
-  # for j in range(1, 9):
-  #   img2=np.hstack((img2, img[add*i:add*(i+1), add*j:add*(j+1)]))
-  # img3=img2
-  # for i in range(1, 9):
-  #   img2=img[add*i:add*(i+1), :add]
-  #   for j in range(1, 9):
-  #     img2=np.hstack((img2, img[add*i:add*(i+1), add*j:add*(j+1)]))
-  #   img3=np.vstack((img3, img2))
-  # return img3
 def getNums(img):
+  """
+    This function returns the predictions made by the model. If model isnt found, it is trained on the data first
+    Arguments:
+      img: an array containing 9*9 sub-images of the sudoku puzzle
+    Returns:
+      A 9*9 array containg the predictions made by the model
+  """
   if len(os.listdir('./Model'))==0:
     train_model(get_data)
   model=tf.keras.models.load_model('./Model/model')
@@ -46,8 +52,12 @@ def getNums(img):
   nums=model.predict(img)
   nums=np.argmax(nums, axis=1).reshape((9, 9))
   return nums
-  
+
 def print_sudoku(nums):
+  """
+    Prints the sudoku in a nice form
+    (Not required at all)
+  """
   for i in range(9):
     s=''
     for j in range(9):
@@ -55,8 +65,13 @@ def print_sudoku(nums):
     print(s)
 
 def main(image='sample.jpeg'):
+  """
+    Main function which calls all the other functions for carrying out certain tasks
+    Arguments:
+      image: Path to the sudoku image
+  """
   img_size=80*9
-  add=img_size//9
+  # add=img_size//9
   crop=8
   imgi=get_sudoku(image, img_size)
 

@@ -1,26 +1,31 @@
 import numpy as np
-import pandas as pd
+# import pandas as pd
 import cv2
 import os
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 import tensorflow as tf
 
 def get_data():
+  """
+    The function extracts data and processes it to a usable form
+    Returns:
+      A tuple: (x_train, x_test, y_train, y_test)
+  """
   imgs=[[(f'./data/English/Fnt/Sample0{format(i, "02d")}/'+j) for j in os.listdir(f'./data/English/Fnt/Sample0{format(i, "02d")}/')] for i in range(2, 11)]
   x=[]
   y=[]
   z=np.zeros((10))
-
+  # Assign zeros
   for i in range(len(imgs[0])):
     a=(np.random.random((64, 64, 1))>0.95)
-    mean_px = a.mean().astype(np.float32)
+    # mean_px = a.mean().astype(np.float32)
     # a = (a - mean_px)
     x.append(a)
     z1=np.zeros_like(z)
     z1[0]=1
     y.append(z1)
-
+  # Every number other than zero
   for i in range(9):
     for j in (imgs[i]):
       a=cv2.imread(j)
@@ -46,7 +51,7 @@ def get_data():
   x=np.array(x)
   y=np.array(y)
 
-  
+
 
   x_train, x_test, y_train, y_test=train_test_split(x, y,  test_size=0.3)
   for i in range(len(x_test)):
@@ -57,36 +62,47 @@ def get_data():
 
 
 def get_model():
-
+  """
+    Returns a keras model which is later trained to detect the digits in the sudoku
+    Returns:
+      keras model
+  """
   model=tf.keras.models.Sequential()
 
-  model.add(tf.keras.layers.Conv2D(48, (2,2), (2,2), padding='same'))
+  model.add(tf.keras.layers.Conv2D(40, (2,2), (2,2), padding='same'))
   model.add(tf.keras.layers.BatchNormalization())
   model.add(tf.keras.layers.Activation('relu'))
   # model.add(tf.keras.layers.MaxPool2D((2,2)))
 
-  model.add(tf.keras.layers.Conv2D(64, (2,2), (2,2), padding='same'))
+  model.add(tf.keras.layers.Conv2D(40, (2,2), (2,2), padding='same'))
   model.add(tf.keras.layers.BatchNormalization())
-  model.add(tf.keras.layers.Activation('relu'))
+  model.add(tf.keras.layers.LeakyReLU(alpha=0.05))
   model.add(tf.keras.layers.MaxPool2D((2,2)))
 
-  model.add(tf.keras.layers.Conv2D(64, (2,2), (2,2)))
+  model.add(tf.keras.layers.Conv2D(80, (2,2), (2,2)))
   model.add(tf.keras.layers.BatchNormalization())
-  model.add(tf.keras.layers.Activation('relu'))
+  model.add(tf.keras.layers.LeakyReLU(alpha=0.05))
   # model.add(tf.keras.layers.MaxPool2D((2,2)))
 
-  model.add(tf.keras.layers.Conv2D(64, (2,2), (2,2)))
+  model.add(tf.keras.layers.Conv2D(80, (2,2), (2,2)))
   model.add(tf.keras.layers.BatchNormalization())
-  model.add(tf.keras.layers.Activation('relu'))
+  model.add(tf.keras.layers.LeakyReLU(alpha=0.05))
   model.add(tf.keras.layers.MaxPool2D((2,2)))
 
   model.add(tf.keras.layers.Flatten())
-  # model.add(tf.keras.layers.Dense(32))
+  model.add(tf.keras.layers.Dense(25))
+  model.add(tf.keras.layers.Dense(25))
   model.add(tf.keras.layers.Dense(10))
   model.add(tf.keras.layers.Softmax())
   return model
 
 def train_model(data_func):
+  """
+    Trains a model to detect numbers in sudoku puzzles and saves it at './Model/model'
+    Arguments:
+      data_func: A function which returns data in the form: (x_train, x_test, y_train, y_test)
+
+  """
   print('Getting Data...')
   x_train, x_test, y_train, y_test=data_func()
 
@@ -114,7 +130,7 @@ def train_model(data_func):
   print('Training Model...')
   model=get_model()
   model.compile(optimizer=tf.keras.optimizers.Adam(lr=0.01, decay=0.1), loss=tf.keras.losses.categorical_crossentropy, metrics=['accuracy'])
-  history=model.fit(gen.flow(x_train, y_train, batch_size=32), steps_per_epoch=len(x_train) / 32, validation_data=(x_test, y_test), epochs=15)
+  history=model.fit(gen.flow(x_train, y_train, batch_size=32), steps_per_epoch=len(x_train) / 32, validation_data=(x_test, y_test), epochs=10)
 
   model.save('./Model/model')
 

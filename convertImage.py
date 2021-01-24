@@ -2,12 +2,17 @@ import cv2
 import numpy as np
 
 def persist_image():
+  """
+      An image is displayed in its dialog until key 'q' is pressed
+  """
   while True:
     if cv2.waitKey(1) & 0xff==ord('q'):
       break
 
 def show_image():
-
+  """
+  Testing method (not in use currently)
+  """
   img=cv2.imread('./sherlock.jpg')
   img=cv2.cvtColor(img, cv2.COLOR_BGR2GRAY) #change color
   # img=cv2.GaussianBlur(img, (5,5), 1) #blur
